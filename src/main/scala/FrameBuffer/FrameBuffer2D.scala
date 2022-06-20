@@ -6,6 +6,46 @@ import chisel3._
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 import chisel3.util._
 
+import javax.imageio.ImageIO
+import java.io.File
+
+class ImageRom (image: String) {
+    val photo = ImageIO.read(new File(image))
+    val w = photo.getWidth
+    val h = photo.getHeight
+    val imageROM = VecInit(Seq.tabulate(h) { index_y => VecInit(Seq.tabulate(w) { index_x => {if ((photo.getRGB(index_x, index_y) & 0xffffff).toInt < 0x808080) false.B else true.B}})})
+}
+
+case class ImageParameters (
+    // image parameters
+    h_video       : Int,
+    h_fp          : Int,
+    h_sync        : Int,
+    h_bp          : Int,
+    h_total       : Int,
+    v_video       : Int,
+    v_fp          : Int,
+    v_sync        : Int,
+    v_bp          : Int,
+    v_total       : Int,
+    h_pol         : Int,
+    v_pol         : Int,
+    active        : Int,
+    // offset parameters
+    offset_top    : Int,
+    offset_bottom : Int,
+    offset_left   : Int,
+    offset_right  : Int,
+    // graph parameters
+    div_size_x    : Int,
+    div_x         : Int,
+    div_size_y    : Int,
+    div_y         : Int,
+    div_size_y_2  : Int,
+    div_y_2       : Int,
+    axis_size     : Int
+)
+
 case class FrameBuffer2DParameters(
   logo : Boolean,
   imageParams : ImageParameters,
